@@ -1,0 +1,13 @@
+//syntax = "proto2";
+syntax = "proto3";
+
+package ris;
+
+message RisBuffer {
+//   required int32  key=1;
+//   required bytes  data=2;
+//   required uint32 crc=3;
+   int32  key=1;
+   bytes  data=2;
+   uint32 crc=3;
+}

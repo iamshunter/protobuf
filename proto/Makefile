@@ -1,15 +1,19 @@
-libproto.a : t1.pb.o t2.pb.o 
-	ar r libproto.a t1.pb.o t2.pb.o
+libproto.a : ris.pb.o t2.pb.o Makefile
+	ar r libproto.a ris.pb.o t2.pb.o
 	ranlib libproto.a
 	ar t libproto.a
 
-t1.pb.o : t1.proto
-	protoc -I=. --cpp_out=. ./t1.proto
-	g++ -std=gnu++11 -I. -c t1.pb.cc
+ris.pb.o : ris.proto
+	protoc -I=. --cpp_out=. ./ris.proto
+	protoc -I=. --go_out=. ./ris.proto
+	g++ -std=gnu++11 -I. -c ris.pb.cc
+	mv ./ris.pb.go src/ris
 
 t2.pb.o : t2.proto
 	protoc -I=. --cpp_out=. ./t2.proto
+	protoc -I=. --go_out=. ./t2.proto
 	g++ -std=gnu++11 -I. -c t2.pb.cc
+	mv ./t2.pb.go src/t2
 
 clean :
-	rm -f t1.pb.h t2.pb.h t1.pb.o t2.pb.o t1.pb.cc t2.pb.cc libproto.a
+	rm -f ris.pb.h t2.pb.h ris.pb.o t2.pb.o ris.pb.cc t2.pb.cc libproto.a src/ris/ris.pb.go src/t2/t2.pb.go 
