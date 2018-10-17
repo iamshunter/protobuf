@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "t1.pb.h"
+#include "ris.pb.h"
 #include "t.h"
 
 void dump(const char *data, int numChar)
@@ -25,7 +25,7 @@ void t(void)
 {
    GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-   t1::risBuffer b1;
+   ris::RisBuffer b1;
    unsigned char array[128];
    unsigned char in[128];
    int      len;

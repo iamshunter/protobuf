@@ -1,10 +1,11 @@
 #include <iostream>
 #include <stdio.h>
-#include "t1.pb.h"
+#include <zlib.h>
+#include "ris.pb.h"
 #include "t.h"
+#include "SocketClass.h"
 
 using namespace std;
-
 
 int main(void)
 {
@@ -13,12 +14,22 @@ int main(void)
    string ostring;
    char   buffer[1024];
 
-   t1::Person p1, p2;
    bool status;
+   int  stat;
+   ris::RisBuffer p1;
 
-   p1.set_id(21);
-   p1.set_name("p1Name");
-   printf("DebugString:\n%s", p1.DebugString().data() );
+   ServerSocket serv;
+   serv.Init();
+   serv.SetPort(31013);
+   serv.SetTimeout(1.e10);
+   stat = serv.Open();
+   if ( stat != 0 )
+   {
+      printf("Can't open server socket %d\n", stat);
+   }
+
+   stat = serv.Read(buffer, sizeof(buffer));
+   printf("Read %d bytes\n", stat);
 
    status = p1.IsInitialized();
    p1.CheckInitialized();
@@ -28,30 +39,22 @@ int main(void)
       return -1;
    }
 
-   status = p1.SerializeToString(&ostring);
-   printf("Serialize returns %d\n", status);
+   dump(buffer, stat);
+
+   status = p1.ParseFromArray(buffer, stat);
+   printf("Parse returns %d\n", status);
    if ( !status )
    {
       return -2;
    }
-   dump(ostring.data(), ostring.length() );
 
-   p1.set_id(12);
-   printf("DebugString:\n%s", p1.DebugString().data() );
-   p1.SerializeToString(&ostring);
-   dump(ostring.data(), ostring.length() );
+   printf("Key %10d\n", p1.key());
+   printf("CRC %10x\n", p1.crc());
+   dump(p1.data().c_str(), p1.data().length());
 
-   memcpy(buffer, ostring.data(), ostring.length() );
-   printf("Good status %d\n",   p2.ParseFromString(buffer) );
-   printf("DebugString2 :\n%s", p2.DebugString().data() );
+   unsigned int crc =  crc32(0x00000000, (const unsigned char *)p1.data().c_str(), p1.data().length());
+   printf("Calculated CRC %x\n", crc);
 
-   buffer[3]++;
-   buffer[3]++;
-   printf("Bad status  %d\n", p2.ParseFromString(buffer) );
-   p2.SerializeToString(&ostring);
-   dump(ostring.data(), ostring.length() );
-   printf("DebugString  :\n%s", p2.DebugString().data() );
 
-   t();
    printf("main done\n");
 }
