@@ -26,6 +26,7 @@ void t(void)
    GOOGLE_PROTOBUF_VERIFY_VERSION;
 
    ris::RisBuffer b1;
+   ris::KeyValue  kv;
    unsigned char array[128];
    unsigned char in[128];
    int      len;
@@ -44,6 +45,19 @@ void t(void)
    printf("Data size %d\n", b1.data().length());
 
    printf("risBuffer DebugString:\n%s", b1.DebugString().data() );
+
+
+   // Get started with ETCD key/value
+   int ii=1;
+   char tt[16];
+   sprintf(tt, "Hello %02x", ii);
+   kv.set_key("msg");
+   kv.set_value(tt);
+   kv.set_lease(0);
+   len = kv.ByteSizeLong();
+   kv.SerializeToArray(in, len);
+   dump( in, len );
+   printf("Data size %d ii %d %s\n", len, ii, kv.key().c_str() );
 
    printf("inside t\n");
 }
